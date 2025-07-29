@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Painel Admin - Orange</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
+    #qr { margin: 30px auto; max-width: 300px; }
+    button { padding: 10px 20px; font-size: 16px; }
+  </style>
+</head>
+<body>
+  <h1>Painel Admin - Orange Celulares e Informática</h1>
+  <button onclick="connect()">Conectar WhatsApp</button>
+  <div id="status"></div>
+  <img id="qr" style="display:none;" />
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    function connect() {
+      document.getElementById('status').innerHTML = 'Aguarde... Gerando QR Code...';
+      socket.emit('connect-wa');
+    }
+    socket.on('qr', (qr) => {
+      document.getElementById('qr').src = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' + qr;
+      document.getElementById('qr').style.display = 'block';
+      document.getElementById('status').innerHTML = 'Escaneie o QR Code com seu WhatsApp';
+    });
+    socket.on('status', (msg) => {
+      document.getElementById('status').innerHTML = '<b>' + msg + '</b>';
+    });
+  </script>
+</body>
+</html>
